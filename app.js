@@ -75,18 +75,22 @@ if (process.env.DATABASE_URL) {
     });
 }
 
+// Trust proxy is required for Render/Heroku and secure cookies
+app.set('trust proxy', 1);
+
 // Session Management
 app.use(session({
     store: sessionStore,
-    secret: 'super-secret-key-change-this-in-production', // In prod use .env
+    secret: process.env.SESSION_SECRET || 'super-secret-key-change-this-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // true in production
+        secure: process.env.NODE_ENV === 'production', // Requires HTTPS in production
         maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
 }));
+
 
 // CSRF Protection
 // Note: csrf protection requires session or cookie-parser to be initialized first
