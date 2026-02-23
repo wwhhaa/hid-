@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اشتراكات VIP - التطبيق الآمن</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .vip-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 100px;
+        }
+
+        .vip-card {
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .vip-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Platinum Box */
+        .vip-platinum {
+            background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 50%, #b0bec5 100%);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            border-color: #cfd8dc;
+        }
+
+        .vip-platinum h3,
+        .vip-platinum .price,
+        .vip-platinum li {
+            color: #37474f;
+            font-weight: bold;
+        }
+
+        .vip-platinum .btn-subscribe {
+            background: #37474f;
+            color: #fff;
+        }
+
+        /* Silver Box */
+        .vip-silver {
+            background: linear-gradient(135deg, #757575 0%, #9e9e9e 50%, #616161 100%);
+            box-shadow: 0 0 20px rgba(158, 158, 158, 0.3);
+            border-color: #bdbdbd;
+        }
+
+        .vip-silver h3,
+        .vip-silver .price,
+        .vip-silver li {
+            color: #fff;
+            text-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .vip-silver .btn-subscribe {
+            background: #212121;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        /* Gold Box */
+        .vip-gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #D4AF37 100%);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            border-color: #ffeb3b;
+        }
+
+        .vip-gold h3,
+        .vip-gold .price,
+        .vip-gold li {
+            color: #3e2723;
+            font-weight: 800;
+        }
+
+        .vip-gold .btn-subscribe {
+            background: #3e2723;
+            color: #FFD700;
+        }
+
+        .vip-features {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: right;
+        }
+
+        .vip-features li {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .vip-features i {
+            margin-left: 10px;
+        }
+
+        .current-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #222;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .claim-section {
+            background: #222;
+            border: 1px solid var(--primary-gold);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div style="font-weight: 800; color: #fff;">اشتراكات VIP</div>
+        <div class="points-display">
+            <span id="user-points">
+                <%= user.points %>
+            </span> <i class="fas fa-coins" style="color: #FFD700;"></i>
+        </div>
+    </header>
+
+    <div class="container vip-container" style="margin-top: 20px;">
+
+        <!-- Daily Claim Layout -->
+        <% if (user.vip_level> 0) { %>
+            <div class="claim-section">
+                <h3 style="color: var(--primary-gold); margin-bottom: 10px;">
+                    <i class="fas fa-gift"></i> مكافأتك اليومية
+                </h3>
+                <p id="claim-status" style="color: #ccc; margin-bottom: 15px;">
+                    <% if (user.vip_level===1) { %> 300 نقطة يومياً <% } %>
+                            <% if (user.vip_level===2) { %> 500 نقطة يومياً <% } %>
+                                    <% if (user.vip_level===3) { %> 1000 نقطة يومياً <% } %>
+                </p>
+                <button id="claim-btn" class="btn-gold">استلام المكافأة</button>
+            </div>
+            <% } %>
+
+                <!-- Platinum Box (VIP 1) -->
+                <div class="vip-card vip-platinum">
+                    <% if (user.vip_level===1) { %>
+                        <div class="current-badge">مشترك حالياً</div>
+                        <% } %>
+                            <h3><i class="fas fa-gem"></i> صندوق البلاتينيوم</h3>
+                            <div class="price">5$ / شهرياً</div>
+                            <ul class="vip-features">
+                                <li><i class="fas fa-coins"></i> 300 نقطة يومياً</li>
+                                <li><i class="fas fa-certificate"></i> تاج البلاتينيوم</li>
+                                <li><i class="fas fa-ticket-alt"></i> 3 فرص لتدوير العجلة يومياً</li>
+                            </ul>
+                            <button class="btn-subscribe" onclick="buyVip(1)">اشتراك</button>
+                </div>
+
+                <!-- Silver Box (VIP 2) -->
+                <div class="vip-card vip-silver">
+                    <% if (user.vip_level===2) { %>
+                        <div class="current-badge">مشترك حالياً</div>
+                        <% } %>
+                            <h3><i class="fas fa-award"></i> صندوق الفضة</h3>
+                            <div class="price">10$ / شهرياً</div>
+                            <ul class="vip-features">
+                                <li><i class="fas fa-coins"></i> 500 نقطة يومياً</li>
+                                <li><i class="fas fa-certificate"></i> تاج فضي</li>
+                                <li><i class="fas fa-ticket-alt"></i> 4 فرص لتدوير العجلة يومياً</li>
+                            </ul>
+                            <button class="btn-subscribe" onclick="buyVip(2)">اشتراك</button>
+                </div>
+
+                <!-- Gold Box (VIP 3) -->
+                <div class="vip-card vip-gold">
+                    <% if (user.vip_level===3) { %>
+                        <div class="current-badge">مشترك حالياً</div>
+                        <% } %>
+                            <h3><i class="fas fa-crown"></i> صندوق الذهب</h3>
+                            <div class="price">15$ / شهرياً</div>
+                            <ul class="vip-features">
+                                <li><i class="fas fa-coins"></i> 1000 نقطة يومياً</li>
+                                <li><i class="fas fa-crown"></i> تاج الملك</li>
+                                <li><i class="fas fa-star"></i> اسم مميز</li>
+                                <li><i class="fas fa-ticket-alt"></i> 6 فرص لتدوير العجلة يومياً</li>
+                            </ul>
+                            <button class="btn-subscribe" onclick="buyVip(3)">اشتراك</button>
+                </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/features/vip" class="active"><i class="fas fa-crown"></i> <span>VIP</span></a>
+        <a href="/features/wheel"><i class="fas fa-dharmachakra"></i><span>العجلة</span></a>
+        <a href="/features/store"><i class="fas fa-store"></i><span>المتجر</span></a>
+        <a href="/features/tasks"><i class="fas fa-tasks"></i><span>المهام</span></a>
+        <a href="/features/profile"><i class="fas fa-user"></i><span>حسابي</span></a>
+    </nav>
+
+    <script>
+        async function buyVip(level) {
+            if (!confirm('هل أنت متأكد من الاشتراك في هذه الباقة؟')) return;
+
+            try {
+                const response = await fetch('/features/vip/buy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ level })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('خطأ: ' + data.message);
+                }
+            } catch (e) {
+                alert('حدث خطأ في الاتصال');
+            }
+        }
+
+        const claimBtn = document.getElementById('claim-btn');
+        if (claimBtn) {
+            claimBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/features/vip/claim-daily', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await response.json();
+                    if (data.claimed) {
+                        alert(`تم استلام ${data.reward} نقطة!`);
+                        location.reload();
+                    } else {
+                        alert('لقد استلمت المكافأة اليوم بالفعل أو حدث خطأ.');
+                    }
+                } catch (e) {
+                    alert('خطأ في الاتصال');
+                }
+            });
+        }
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const currentUserId = <%= user && user.id ? user.id : 'null' %>;
+        socket.on('user_updated', (data) => {
+            if (data.userId === currentUserId) {
+                if (data.points !== undefined) {
+                    const pts = document.getElementById('user-points');
+                    if (pts) pts.innerText = data.points;
+                }
+                if (data.isVip) {
+                    window.location.reload();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

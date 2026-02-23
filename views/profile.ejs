@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حسابي - التطبيق الآمن</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="points-display">
+            <span id="user-points">
+                <%= user.points %>
+            </span> <span>نقطة</span> <i class="fas fa-coins"></i>
+        </div>
+        <div class="user-info">
+            <a href="/dashboard" class="btn-gold" style="padding: 5px 10px;">رجوع</a>
+        </div>
+    </header>
+
+    <div class="container" style="padding-bottom: 80px;">
+        <div class="auth-container" style="max-width: 600px; margin-top: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <i class="fas fa-user-circle fa-5x" style="color: var(--primary-gold);"></i>
+                <h2 style="margin-top: 10px;">
+                    <%= user.username %>
+                        <% if(user.vip_level===1) { %> <i class="fas fa-certificate" style="color: #e0e0e0;"
+                                title="Platinum"></i>
+                            <% } %>
+                                <% if(user.vip_level===2) { %> <i class="fas fa-certificate" style="color: #9e9e9e;"
+                                        title="Silver"></i>
+                                    <% } %>
+                                        <% if(user.vip_level===3) { %> <i class="fas fa-crown" style="color: #FFD700;"
+                                                title="Gold/King"></i>
+                                            <% } %>
+                </h2>
+                <p style="color: #ccc;">
+                    <%= user.email %>
+                </p>
+                <% if(user.vip_level> 0) { %>
+                    <div style="margin-top: 5px; color: var(--primary-gold); font-weight: bold;">
+                        مشترك VIP:
+                        <% if(user.vip_level===1) { %> بلاتينيوم <% } %>
+                                <% if(user.vip_level===2) { %> فضي <% } %>
+                                        <% if(user.vip_level===3) { %> ذهبي <% } %>
+                    </div>
+                    <% } %>
+            </div>
+
+            <div style="border-top: 1px solid #333; padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span>رقم الحساب:</span>
+                    <span style="color: var(--primary-gold);">#<%= user.id %></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span>عضو منذ:</span>
+                    <span>
+                        <%= new Date(user.created_at || Date.now()).toLocaleDateString('ar-EG') %>
+                    </span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span>إجمالي النقاط:</span>
+                    <span style="color: var(--primary-gold);">
+                        <%= user.points %>
+                    </span>
+                </div>
+            </div>
+
+            <button class="btn-gold"
+                style="margin-top: 20px; background: linear-gradient(45deg, #ff4d4d, #cc0000); color: white;">حذف
+                الحساب</button>
+        </div>
+
+        <!-- Moved from Dashboard -->
+        <div class="stat-card"
+            style="margin-top: 20px; border: 1px solid var(--primary-gold); background: radial-gradient(circle, #222, #000);">
+            <i class="fas fa-crown fa-3x" style="color: var(--primary-gold); margin-bottom: 10px;"></i>
+            <h2 style="color: #fff; margin-bottom: 5px;">رصيدك الحالي</h2>
+            <div
+                style="font-size: 2.5rem; font-weight: bold; color: var(--primary-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                <%= user.points %>
+            </div>
+            <p style="color: #888;">نقطة ذهبية</p>
+        </div>
+
+        <div class="stat-card">
+            <h3
+                style="color: #fff; text-align: right; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+                نشاطك اليومي
+            </h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #ccc;">
+                <span>تسجيل الدخول</span>
+                <span style="color: var(--success-color);"><i class="fas fa-check"></i> تم</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #ccc;">
+                <span>مشاهدة إعلان</span>
+                <span style="color: var(--error-color);">لم يكتمل</span>
+            </div>
+        </div>
+        <!-- End Moved Content -->
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/features/vip"><i class="fas fa-crown"></i><span>VIP</span></a>
+        <a href="/features/wheel"><i class="fas fa-dharmachakra"></i></a>
+        <a href="/features/store"><i class="fas fa-store"></i></a>
+        <a href="/features/profile" class="active"><i class="fas fa-user"></i></a>
+    </nav>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const currentUserId = <%= user && user.id ? user.id : 'null' %>;
+        socket.on('user_updated', (data) => {
+            if (data.userId === currentUserId) {
+                if (data.points !== undefined) {
+                    const pts1 = document.getElementById('user-points');
+                    if (pts1) pts1.innerText = data.points;
+
+                    const statCardPts = document.querySelector('.stat-card div');
+                    if (statCardPts) statCardPts.innerText = data.points;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

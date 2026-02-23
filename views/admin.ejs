@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #111;
+            border-bottom: 1px solid var(--primary-gold);
+        }
+
+        .admin-header h2 {
+            color: var(--primary-gold);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .admin-header a {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #222;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: #111;
+            color: #888;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-gold);
+            border-bottom: 2px solid var(--primary-gold);
+            background: #1a1a1a;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 0 15px 100px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Add Product Form */
+        .form-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-card h3 {
+            color: var(--primary-gold);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            margin-bottom: 10px;
+        }
+
+        .form-row label {
+            display: block;
+            color: #aaa;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
+        .form-row input,
+        .form-row select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #222;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .form-row input:focus {
+            border-color: var(--primary-gold);
+            outline: none;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Product List */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1a1a1a;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .product-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .product-item .pi-info {
+            flex: 1;
+        }
+
+        .product-item .pi-name {
+            color: #eee;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .product-item .pi-meta {
+            color: #888;
+            font-size: 0.7rem;
+        }
+
+        .btn-del {
+            background: #ff4d4d;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        /* User List */
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1a1a1a;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .user-item .ui-info {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .user-item .ui-name {
+            color: #eee;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .user-item .ui-email {
+            color: #666;
+            font-size: 0.7rem;
+        }
+
+        .user-item .ui-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .ui-controls input {
+            width: 80px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #222;
+            color: var(--primary-gold);
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .ui-controls select {
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #222;
+            color: #fff;
+            font-size: 0.8rem;
+        }
+
+        .btn-save {
+            background: var(--primary-gold);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .badge-vip {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+
+        .vip-0 {
+            background: #333;
+            color: #888;
+        }
+
+        .vip-1 {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .vip-2 {
+            background: #9e9e9e;
+            color: #fff;
+        }
+
+        .vip-3 {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            z-index: 999;
+            font-size: 0.85rem;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-gold);
+        }
+
+        .stat-box .lbl {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-header">
+        <h2><i class="fas fa-shield-alt"></i> لوحة التحكم</h2>
+        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> خروج</a>
+    </div>
+
+    <!-- Stats -->
+    <div style="padding: 15px;">
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="num">
+                    <%= products.length %>
+                </div>
+                <div class="lbl">المنتجات</div>
+            </div>
+            <div class="stat-box">
+                <div class="num">
+                    <%= users.length %>
+                </div>
+                <div class="lbl">المستخدمين</div>
+            </div>
+            <div class="stat-box">
+                <div class="num">
+                    <%= prizes.length %>
+                </div>
+                <div class="lbl">جوائز العجلة</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="products"><i class="fas fa-gift"></i> المنتجات</button>
+        <button class="tab-btn" data-tab="users"><i class="fas fa-users"></i> المستخدمين</button>
+        <button class="tab-btn" data-tab="wheel"><i class="fas fa-dharmachakra"></i> العجلة</button>
+    </div>
+
+    <!-- Products Tab -->
+    <div class="tab-content active" id="tab-products">
+        <div class="form-card">
+            <h3><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h3>
+            <div class="form-row">
+                <label>اسم المنتج</label>
+                <input type="text" id="p-name" placeholder="مثال: بطاقة جوجل بلاي 10$">
+            </div>
+            <div class="form-row">
+                <label>الوصف</label>
+                <input type="text" id="p-desc" placeholder="وصف قصير">
+            </div>
+            <div class="form-row">
+                <label>السعر (نقاط)</label>
+                <input type="number" id="p-price" placeholder="500">
+            </div>
+            <div class="form-row">
+                <label>الفئة</label>
+                <select id="p-category">
+                    <option value="بطاقات هدايا">بطاقات هدايا</option>
+                    <option value="ألعاب">ألعاب</option>
+                    <option value="رصيد موبايل">رصيد موبايل</option>
+                    <option value="نقود">نقود</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>رابط الصورة (URL)</label>
+                <input type="text" id="p-image" placeholder="https://example.com/image.png">
+            </div>
+            <button class="btn-add" id="btn-add-product"><i class="fas fa-plus"></i> إضافة المنتج</button>
+        </div>
+
+        <h3 style="color: #fff; margin-bottom: 10px;">المنتجات الحالية (<span id="prod-count">
+                <%= products.length %>
+            </span>)</h3>
+        <div class="product-list" id="product-list">
+            <% products.forEach(p=> { %>
+                <div class="product-item" id="prod-<%= p.id %>">
+                    <% if (p.image_url) { %>
+                        <img src="<%= p.image_url %>" alt="<%= p.name %>">
+                        <% } else { %>
+                            <div
+                                style="width:50px;height:50px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-gift" style="color:#555;"></i>
+                            </div>
+                            <% } %>
+                                <div class="pi-info">
+                                    <div class="pi-name">
+                                        <%= p.name %>
+                                    </div>
+                                    <div class="pi-meta">
+                                        <%= p.category %> · <%= p.price %> نقطة
+                                    </div>
+                                </div>
+                                <button class="btn-save btn-key-modal"
+                                    style="background:#2196F3;color:#fff;margin-left:5px;" data-id="<%= p.id %>"
+                                    data-name="<%= p.name %>">
+                                    <i class="fas fa-key"></i>
+                                </button>
+                                <button class="btn-del btn-delete-product" data-id="<%= p.id %>"><i
+                                        class="fas fa-trash"></i></button>
+                </div>
+                <% }); %>
+        </div>
+
+        <!-- Key Modal -->
+        <div id="keyModal"
+            style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center;">
+            <div
+                style="background:#1a1a1a;border:1px solid #333;width:90%;max-width:400px;padding:20px;border-radius:12px;">
+                <h3 style="color:#fff;margin-bottom:15px;">إضافة مفاتيح: <span id="km-name"
+                        style="color:var(--primary-gold);"></span></h3>
+                <p style="color:#aaa;font-size:0.8rem;margin-bottom:10px;">المفاتيح المتوفرة: <span id="km-count"
+                        style="color:#fff;font-weight:bold;">...</span></p>
+                <textarea id="km-keys" rows="5" placeholder="أدخل المفاتيح هنا، كل مفتاح في سطر جديد"
+                    style="width:100%;background:#222;border:1px solid #333;color:#fff;padding:10px;border-radius:8px;margin-bottom:15px;resize:vertical;"></textarea>
+                <div style="display:flex;gap:10px;">
+                    <button id="btn-submit-keys"
+                        style="flex:1;background:var(--primary-gold);color:#000;border:none;padding:10px;border-radius:8px;font-weight:bold;cursor:pointer;">إضافة</button>
+                    <button id="btn-close-key-modal"
+                        style="flex:1;background:#333;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-content" id="tab-users">
+        <h3 style="color: #fff; margin-bottom: 10px;">إدارة المستخدمين (<%= users.length %>)</h3>
+        <% users.forEach(u=> { %>
+            <div class="user-item">
+                <div class="ui-info">
+                    <div class="ui-name">
+                        #<%= u.id %> · <%= u.username %>
+                                <span class="badge-vip vip-<%= u.vip_level || 0 %>">
+                                    <% if(!u.vip_level || u.vip_level===0) { %>عادي<% } %>
+                                            <% if(u.vip_level===1) { %>بلاتينيوم<% } %>
+                                                    <% if(u.vip_level===2) { %>فضي<% } %>
+                                                            <% if(u.vip_level===3) { %>ذهبي<% } %>
+                                </span>
+                    </div>
+                    <div class="ui-email">
+                        <%= u.email %>
+                    </div>
+                </div>
+                <div class="ui-controls">
+                    <input type="number" id="pts-<%= u.id %>" value="<%= u.points %>" title="النقاط">
+                    <select id="vip-<%= u.id %>">
+                        <option value="0" <%=u.vip_level===0 ? 'selected' : '' %>>عادي</option>
+                        <option value="1" <%=u.vip_level===1 ? 'selected' : '' %>>بلاتينيوم</option>
+                        <option value="2" <%=u.vip_level===2 ? 'selected' : '' %>>فضي</option>
+                        <option value="3" <%=u.vip_level===3 ? 'selected' : '' %>>ذهبي</option>
+                    </select>
+                    <button class="btn-save btn-save-user" data-id="<%= u.id %>"><i class="fas fa-save"></i></button>
+                </div>
+            </div>
+            <% }); %>
+    </div>
+
+    <!-- Wheel Prizes Tab -->
+    <div class="tab-content" id="tab-wheel">
+        <div class="form-card">
+            <h3><i class="fas fa-plus-circle"></i> إضافة جائزة جديدة</h3>
+            <div class="form-row">
+                <label>النص (ما يظهر على العجلة)</label>
+                <input type="text" id="w-label" placeholder="مثال: 500">
+            </div>
+            <div class="form-row">
+                <label>عدد النقاط</label>
+                <input type="number" id="w-points" placeholder="500">
+            </div>
+            <div class="form-row">
+                <label>لون الشريحة</label>
+                <div style="display:flex;gap:8px;">
+                    <input type="color" id="w-color" value="#3E2723" style="width:50px;height:40px;padding:2px;">
+                    <input type="text" id="w-color-text" value="#3E2723" style="flex:1;">
+                </div>
+            </div>
+            <button class="btn-add" id="btn-add-prize"><i class="fas fa-plus"></i> إضافة الجائزة</button>
+        </div>
+
+        <h3 style="color: #fff; margin-bottom: 10px;">الجوائز الحالية (<%= prizes.length %>)</h3>
+        <div class="product-list" id="prize-list">
+            <% prizes.forEach(pr=> { %>
+                <div class="product-item" id="prize-<%= pr.id %>">
+                    <div
+                        style="width:40px;height:40px;border-radius:8px;background:<%= pr.color %>;display:flex;align-items:center;justify-content:center;color:#FFD700;font-weight:bold;font-size:0.8rem;">
+                        <%= pr.label %>
+                    </div>
+                    <div class="pi-info">
+                        <div class="pi-name">
+                            <%= pr.label %> نقطة
+                        </div>
+                        <div class="pi-meta">
+                            <%= pr.points %> نقطة فعلية
+                        </div>
+                    </div>
+                    <button class="btn-del btn-delete-prize" data-id="<%= pr.id %>"><i
+                            class="fas fa-trash"></i></button>
+                </div>
+                <% }); %>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">تم الحفظ ✅</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const tabName = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    const content = document.getElementById('tab-' + tabName);
+                    if (content) content.classList.add('active');
+                    this.classList.add('active');
+                });
+            });
+
+            // Color picker sync
+            const colorInput = document.getElementById('w-color');
+            const colorText = document.getElementById('w-color-text');
+            if (colorInput && colorText) {
+                colorInput.addEventListener('input', function () { colorText.value = this.value; });
+                colorText.addEventListener('input', function () { colorInput.value = this.value; });
+            }
+
+            // Event Delegation for buttons
+            document.body.addEventListener('click', function (e) {
+                const target = e.target.closest('button');
+                if (!target) return;
+
+                if (target.id === 'btn-add-product') addProduct();
+                if (target.id === 'btn-add-prize') addPrize();
+                if (target.id === 'btn-submit-keys') submitKeys();
+                if (target.id === 'btn-close-key-modal') closeKeyModal();
+
+                if (target.classList.contains('btn-key-modal')) {
+                    const id = target.getAttribute('data-id');
+                    const name = target.getAttribute('data-name');
+                    openKeyModal(id, name);
+                }
+
+                if (target.classList.contains('btn-delete-product')) {
+                    const id = target.getAttribute('data-id');
+                    deleteProduct(id);
+                }
+
+                if (target.classList.contains('btn-save-user')) {
+                    const id = target.getAttribute('data-id');
+                    saveUser(id);
+                }
+
+                if (target.classList.contains('btn-delete-prize')) {
+                    const id = target.getAttribute('data-id');
+                    deletePrize(id);
+                }
+            });
+        });
+
+        function showToast(msg, isError) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.style.background = isError ? '#ff4d4d' : '#4CAF50';
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2000);
+        }
+
+        async function addProduct() {
+            const nameEl = document.getElementById('p-name');
+            const descEl = document.getElementById('p-desc');
+            const priceEl = document.getElementById('p-price');
+            const catEl = document.getElementById('p-category');
+            const imgEl = document.getElementById('p-image');
+
+            if (!nameEl || !priceEl) return;
+            const name = nameEl.value;
+            const description = descEl ? descEl.value : '';
+            const price = priceEl.value;
+            const category = catEl ? catEl.value : '';
+            const image_url = imgEl ? imgEl.value : '';
+
+            if (!name || !price) return showToast('يرجى ملء الاسم والسعر', true);
+
+            try {
+                const res = await fetch('/admin/product/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description, price, category, image_url })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('تم إضافة المنتج ✅');
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    showToast('خطأ: ' + (data.message || 'فشل إضافة المنتج'), true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('خطأ بالاتصال: ' + e.message, true);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('حذف هذا المنتج؟')) return;
+            try {
+                const res = await fetch('/admin/product/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const el = document.getElementById('prod-' + id);
+                    if (el) el.remove();
+                    const countEl = document.getElementById('prod-count');
+                    if (countEl) countEl.innerText = parseInt(countEl.innerText) - 1;
+                    showToast('تم الحذف ✅');
+                } else {
+                    showToast('خطأ: ' + (data.message || 'فشل الحذف'), true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('خطأ بالاتصال: ' + e.message, true);
+            }
+        }
+
+        async function saveUser(userId) {
+            const ptsEl = document.getElementById('pts-' + userId);
+            const vipEl = document.getElementById('vip-' + userId);
+            if (!ptsEl || !vipEl) return;
+
+            const points = ptsEl.value;
+            const vipLevel = vipEl.value;
+
+            try {
+                await fetch('/admin/user/points', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, points })
+                });
+                await fetch('/admin/user/vip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, vipLevel })
+                });
+                showToast('تم حفظ التغييرات ✅');
+            } catch (e) {
+                showToast('خطأ بالاتصال', true);
+            }
+        }
+
+        async function addPrize() {
+            const lblEl = document.getElementById('w-label');
+            const ptsEl = document.getElementById('w-points');
+            const colEl = document.getElementById('w-color');
+            if (!lblEl || !ptsEl) return;
+
+            const label = lblEl.value;
+            const points = ptsEl.value;
+            const color = colEl ? colEl.value : '#000000';
+
+            if (!label || !points) return showToast('يرجى ملء النص والنقاط', true);
+            try {
+                const res = await fetch('/admin/prize/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ label, points, color })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('تم إضافة الجائزة ✅');
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    showToast('خطأ: ' + data.message, true);
+                }
+            } catch (e) { showToast('خطأ بالاتصال', true); }
+        }
+
+        let currentProductId = null;
+
+        function openKeyModal(id, name) {
+            currentProductId = id;
+            const modalName = document.getElementById('km-name');
+            if (modalName) modalName.textContent = name;
+            document.getElementById('km-keys').value = '';
+            document.getElementById('keyModal').style.display = 'flex';
+            fetchKeyCount(id);
+        }
+
+        function closeKeyModal() {
+            document.getElementById('keyModal').style.display = 'none';
+            currentProductId = null;
+        }
+
+        async function fetchKeyCount(id) {
+            try {
+                const res = await fetch('/admin/product/keys/' + id);
+                const data = await res.json();
+                if (data.success) {
+                    const countEl = document.getElementById('km-count');
+                    if (countEl) countEl.textContent = data.count;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function submitKeys() {
+            if (!currentProductId) return;
+            const keysEl = document.getElementById('km-keys');
+            if (!keysEl) return;
+            const keys = keysEl.value;
+            if (!keys.trim()) return showToast('يرجى إدخال مفتاح واحد على الأقل', true);
+
+            try {
+                const res = await fetch('/admin/product/keys/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: currentProductId, keys })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('تم إضافة ' + data.count + ' مفاتيح ✅');
+                    keysEl.value = '';
+                    fetchKeyCount(currentProductId);
+                } else {
+                    showToast('خطأ: ' + (data.message || 'فشل إضافة المفاتيح'), true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('خطأ بالاتصال: ' + e.message, true);
+            }
+        }
+
+        async function deletePrize(id) {
+            if (!confirm('حذف هذه الجائزة؟')) return;
+            try {
+                const res = await fetch('/admin/prize/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const el = document.getElementById('prize-' + id);
+                    if (el) el.remove();
+                    showToast('تم الحذف ✅');
+                }
+            } catch (e) { showToast('خطأ بالاتصال', true); }
+        }
+    </script>
+</body>
+
+</html>

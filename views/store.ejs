@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المتجر</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .store-header {
+            text-align: center;
+            padding: 15px 0 5px;
+        }
+
+        .store-header h2 {
+            color: var(--primary-gold);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .store-header .balance {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            color: var(--primary-gold);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* Category Filter */
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: none;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-tab {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #aaa;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cat-tab.active,
+        .cat-tab:hover {
+            background: var(--primary-gold);
+            color: #000;
+            border-color: var(--primary-gold);
+            font-weight: bold;
+        }
+
+        /* Product Grid — 3 columns, compact */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-bottom: 100px;
+        }
+
+        .p-card {
+            background: linear-gradient(145deg, #1a1a1a, #111);
+            border: 1px solid #222;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .p-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .p-img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            background: #0a0a0a;
+            display: block;
+        }
+
+        .p-img-placeholder {
+            width: 100%;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            color: var(--secondary-gold);
+            font-size: 2rem;
+        }
+
+        .p-info {
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .p-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #eee;
+            line-height: 1.2;
+            max-height: 2.4em;
+            overflow: hidden;
+        }
+
+        .p-price {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--primary-gold);
+            font-weight: 800;
+            font-size: 0.75rem;
+        }
+
+        .p-price i {
+            font-size: 0.65rem;
+        }
+
+        .p-btn {
+            display: block;
+            width: 100%;
+            padding: 6px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary-gold), #c8940a);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .p-btn:hover {
+            opacity: 0.85;
+        }
+
+        .p-category-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #ccc;
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #666;
+            grid-column: 1 / -1;
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+
+        @media (min-width: 400px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .p-img,
+            .p-img-placeholder {
+                height: 110px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="/admin/login" style="color: #555; font-size: 1rem; text-decoration: none;"><i
+                class="fas fa-cog"></i></a>
+        <div style="font-weight: 800; color: #fff;">المتجر</div>
+        <div class="points-display">
+            <span>
+                <%= user.points %>
+            </span>
+            <i class="fas fa-coins" style="color: #FFD700;"></i>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="store-header">
+            <h2><i class="fas fa-store"></i> استبدال الجوائز</h2>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div class="category-tabs">
+            <div class="cat-tab active" data-cat="all">الكل</div>
+            <% if (typeof products !=='undefined' ) { const cats=[...new Set(products.map(p=> p.category))];
+                cats.forEach(cat => { %>
+                <div class="cat-tab" data-cat="<%= cat %>">
+                    <%= cat %>
+                </div>
+                <% }); } %>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid">
+            <% if (typeof products !=='undefined' && products.length> 0) { %>
+                <% products.forEach(product=> { %>
+                    <div class="p-card" data-category="<%= product.category %>">
+                        <% if(product.image_url) { %>
+                            <img src="<%= product.image_url %>" alt="<%= product.name %>" class="p-img" loading="lazy">
+                            <% } else { %>
+                                <div class="p-img-placeholder"><i class="fas fa-gift"></i></div>
+                                <% } %>
+                                    <span class="p-category-badge">
+                                        <%= product.category %>
+                                    </span>
+                                    <div class="p-info">
+                                        <div class="p-name">
+                                            <%= product.name %>
+                                        </div>
+                                        <div class="p-price"><i class="fas fa-coins"></i>
+                                            <%= product.price %>
+                                        </div>
+                                    </div>
+                                    <button class="p-btn" data-id="<%= product.id %>" data-price="<%= product.price %>"
+                                        data-name="<%= product.name %>">استبدال</button>
+                    </div>
+                    <% }); %>
+                        <% } else { %>
+                            <p class="empty-msg">لا توجد منتجات حالياً</p>
+                            <% } %>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/features/vip"><i class="fas fa-crown"></i><span>VIP</span></a>
+        <a href="/features/wheel"><i class="fas fa-dharmachakra"></i><span>العجلة</span></a>
+        <a href="/features/store" class="active"><i class="fas fa-store"></i><span>المتجر</span></a>
+        <a href="/features/tasks"><i class="fas fa-tasks"></i><span>المهام</span></a>
+        <a href="/features/profile"><i class="fas fa-user"></i><span>حسابي</span></a>
+    </nav>
+
+    <script>
+        // Category Filter
+        document.querySelectorAll('.cat-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const cat = this.dataset.cat;
+                document.querySelectorAll('.p-card').forEach(card => {
+                    if (cat === 'all' || card.dataset.category === cat) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Redeem
+        document.querySelectorAll('.p-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const name = this.dataset.name;
+                const price = this.dataset.price;
+                const id = this.dataset.id;
+
+                if (confirm('هل تريد استبدال "' + name + '" مقابل ' + price + ' نقطة؟')) {
+                    try {
+                        const res = await fetch('/features/store/buy', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId: id })
+                        });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            // Show success modal with key
+                            alert(data.message); // For now using alert for simplicity as requested, but a modal would be better user exp
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (e) {
+                        alert('خطأ في الاتصال');
+                    }
+                }
+            });
+        });
+        <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const currentUserId = <%= user && user.id ? user.id : 'null' %>;
+        socket.on('user_updated', (data) => {
+            if (data.userId === currentUserId) {
+                if (data.points !== undefined) {
+                    const pts = document.querySelector('.points-display span');
+        if (pts) pts.innerText = data.points;
+                }
+            }
+        });
+        socket.on('product_updated', () => {
+            window.location.reload();
+        });
+    </script>
+</body>
+
+</html>

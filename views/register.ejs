@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إنشاء حساب</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="auth-page-body">
+
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <i class="fas fa-user-plus fa-4x" style="color: var(--primary-gold); margin-bottom: 20px;"></i>
+        <h1 style="color: #fff; font-size: 1.8rem;">انضم إلينا</h1>
+    </div>
+
+    <div class="auth-container">
+        <h2 style="border-bottom: 1px solid #333; padding-bottom: 15px;">إنشاء حساب جديد</h2>
+
+        <% if (error) { %>
+            <div class="error-message">
+                <%= error %>
+            </div>
+            <% } %>
+
+                <form action="/auth/register" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> اسم المستخدم</label>
+                        <input type="text" name="username" placeholder="اسمك المستعار" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                        <input type="email" name="email" placeholder="example@mail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> كلمة المرور</label>
+                        <input type="password" name="password" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn-gold">تسجيل</button>
+                </form>
+
+                <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+                    <span style="color: #666;">لديك حساب؟</span>
+                    <a href="/auth/login" style="color: var(--primary-gold); font-weight: bold;">تسجيل الدخول</a>
+                </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصندوق اليومي - التطبيق الآمن</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="points-display">
+            <span id="user-points">
+                <%= user.points %>
+            </span> <span>نقطة</span> <i class="fas fa-coins"></i>
+        </div>
+        <div class="user-info">
+            <a href="/dashboard" class="btn-gold" style="padding: 5px 10px;">رجوع</a>
+        </div>
+    </header>
+
+    <div class="container" style="text-align: center; margin-top: 50px; padding-bottom: 80px;">
+        <h2 style="color: var(--primary-gold); margin-bottom: 30px;">الصندوق اليومي</h2>
+
+        <i class="fas fa-box-open fa-7x"
+            style="color: var(--primary-gold); cursor: pointer; transition: transform 0.3s;"
+            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></i>
+
+        <p style="margin-top: 20px; color: #ccc;">اضغط على الصندوق لاستلام جائزتك اليومية!</p>
+
+        <button class="btn-gold" style="margin-top: 30px; width: 200px;">استلام</button>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/features/vip"><i class="fas fa-crown"></i><span>VIP</span></a>
+        <a href="/features/wheel"><i class="fas fa-dharmachakra"></i></a>
+        <a href="/features/store"><i class="fas fa-store"></i></a>
+        <a href="/features/profile"><i class="fas fa-user"></i></a>
+    </nav>
+</body>
+
+</html>

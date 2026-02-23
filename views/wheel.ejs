@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>عجلة الحظ</title>
+    <link rel="stylesheet" href="/css/style.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .wheel-wrapper {
+            position: relative;
+            width: 340px;
+            height: 340px;
+            margin: 30px auto;
+            border-radius: 50%;
+            background: conic-gradient(#111, #B38728, #111, #B38728, #111, #B38728, #111);
+            padding: 15px;
+            box-shadow:
+                0 0 30px rgba(0, 191, 255, 0.3),
+                0 20px 50px rgba(0, 0, 0, 0.9),
+                inset 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 2px solid #B38728;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+            border: 4px solid #B38728;
+        }
+
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+
+            <% if (typeof prizes !=='undefined' && prizes.length > 0) {
+                const segAngle=360 / prizes.length;
+                let gradient='conic-gradient(';
+
+                prizes.forEach((p, i)=> {
+                        const startDeg=segAngle * i;
+                        const endDeg=segAngle * (i + 1);
+                        const color=p.color || (i % 2===0 ? '#050505' : '#0277BD');
+                        gradient +=color + ' ' + startDeg + 'deg ' + endDeg + 'deg';
+                        if (i < prizes.length - 1) gradient +=', ';
+                    });
+                gradient+=')';
+                %>background: <%=gradient %>;
+                <%
+            }
+
+            else {
+                %>background: conic-gradient(#050505 0deg 45deg, #0277BD 45deg 90deg, #050505 90deg 135deg, #0277BD 135deg 180deg, #050505 180deg 225deg, #0277BD 225deg 270deg, #050505 270deg 315deg, #0277BD 315deg 360deg);
+                <%
+            }
+
+            %>transition: transform 5s cubic-bezier(0.15, 0.8, 0.15, 0.99);
+        }
+
+        #wheel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(transparent 30%, rgba(0, 0, 0, 0.4));
+            border-radius: 50%;
+        }
+
+        #pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            filter: drop-shadow(0 0 10px #FFD700);
+        }
+
+        .light {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #fff, 0 0 15px #00BFFF;
+            z-index: 10;
+        }
+
+        .center-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #00BFFF, #000);
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #4E342E;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .red-card-badge {
+            background: linear-gradient(135deg, #ff4d4d, #cc0000);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #ff9999;
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .seg-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            color: #FFD700;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-shadow: 0 1px 3px #000;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="position: relative; height: 60px;">
+        <a href="/admin/login"
+            style="color: #555; font-size: 1rem; text-decoration: none; position: absolute; right: 20px; top: 20px;"><i
+                class="fas fa-cog"></i></a>
+
+        <div class="points-display"
+            style="position: absolute; left: 20px; top: 10px; border: none; background: none; box-shadow: none; font-size: 2rem; text-shadow: 0 0 20px #FFD700; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-coins" style="color: #FFD700;"></i>
+            <span id="user-points">
+                <%= user.points %>
+            </span>
+        </div>
+    </header>
+
+    <div class="container" style="justify-content: center; padding-bottom: 120px; align-items: center;">
+
+        <div class="red-card-badge">
+            <i class="fas fa-ticket-alt"></i>
+            <span id="red-cards-display">
+                <%= user.red_cards %>
+            </span> بطاقة حمراء
+        </div>
+
+        <div class="wheel-wrapper">
+            <div id="pointer">
+                <i class="fas fa-caret-down fa-4x" style="color: #FFD700; stroke: #000; stroke-width: 2px;"></i>
+            </div>
+            <div class="wheel-inner">
+                <div id="wheel">
+                    <% if (typeof prizes !=='undefined' && prizes.length> 0) {
+                        const sAngle = 360 / prizes.length;
+                        prizes.forEach((p, i) => {
+                        const rotate = sAngle * i + sAngle / 2;
+                        %>
+                        <div class="seg-label" style="transform: rotate(<%= rotate %>deg) translateY(-60px);">
+                            <span>
+                                <%= p.points %>
+                            </span>
+                        </div>
+                        <% }); } %>
+                </div>
+            </div>
+            <div class="center-hub">
+                <i class="fas fa-star"></i>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <p id="result"
+                style="height: 30px; margin-bottom: 15px; color: #FBF5B7; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 10px rgba(179, 135, 40, 0.5);">
+            </p>
+            <button id="spin-btn" class="btn-gold" <% if(user.red_cards <=0) { %> disabled style="background: #333;
+                color: #888;" <% } %>>
+                    <% if(user.red_cards> 0) { %> أدر العجلة الآن <% } else { %> تحتاج لبطاقة حمراء <% } %>
+            </button>
+            <% if(user.red_cards <=0) { %>
+                <a href="/features/tasks"
+                    style="display: block; margin-top: 10px; color: #ff4d4d; font-weight: bold; font-size: 0.9rem;">
+                    اذهب للمهام للحصول على بطاقة <i class="fas fa-arrow-left"></i>
+                </a>
+                <% } %>
+        </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/features/vip"><i class="fas fa-crown"></i><span>VIP</span></a>
+        <a href="/features/wheel" class="active">
+            <i class="fas fa-dharmachakra"></i>
+            <span>العجلة</span>
+        </a>
+        <a href="/features/store">
+            <i class="fas fa-store"></i>
+            <span>المتجر</span>
+        </a>
+        <a href="/features/tasks">
+            <i class="fas fa-tasks"></i>
+            <span>المهام</span>
+        </a>
+        <a href="/features/profile">
+            <i class="fas fa-user"></i>
+            <span>حسابي</span>
+        </a>
+    </nav>
+
+    <script>
+        const spinBtn = document.getElementById('spin-btn');
+        const wheel = document.getElementById('wheel');
+        const result = document.getElementById('result');
+        const pointsDisplay = document.getElementById('user-points');
+        const wrapper = document.querySelector('.wheel-wrapper');
+        const redCardsDisplay = document.getElementById('red-cards-display');
+        let spinning = false;
+        let currentRotation = 0;
+
+        // Add lights
+        for (let i = 0; i < 360; i += 30) {
+            const light = document.createElement('div');
+            light.className = 'light';
+            const r = 160;
+            const x = 170 + r * Math.cos(i * Math.PI / 180) - 4;
+            const y = 170 + r * Math.sin(i * Math.PI / 180) - 4;
+            light.style.left = x + 'px';
+            light.style.top = y + 'px';
+            wrapper.appendChild(light);
+        }
+
+        spinBtn.addEventListener('click', async () => {
+            if (spinning) return;
+
+            // Optimistic UI check
+            if (parseInt(redCardsDisplay.innerText) <= 0) {
+                result.textContent = 'لا توجد بطاقة حمراء!';
+                return;
+            }
+
+            spinning = true;
+            result.textContent = '...جاري التدوير';
+            spinBtn.disabled = true;
+            spinBtn.style.opacity = '0.7';
+
+            try {
+                console.log('Sending spin request...');
+                const response = await fetch('/features/spin-wheel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                console.log('Spin response:', data);
+
+                if (data.success) {
+                    // Update Red Card count
+                    let currentCards = parseInt(redCardsDisplay.innerText);
+                    redCardsDisplay.innerText = Math.max(0, currentCards - 1);
+
+                    // Validation
+                    const winIndex = data.winIndex;
+                    if (typeof winIndex === 'undefined' || winIndex === null) {
+                        console.error('Invalid winIndex:', winIndex);
+                        result.textContent = 'خطأ في البيانات';
+                        spinning = false;
+                        spinBtn.disabled = false;
+                        return;
+                    }
+
+                    const totalSegments = <%= (typeof prizes !== 'undefined' && prizes.length > 0) ? prizes.length : 8 %>;
+                    const segmentAngle = 360 / totalSegments;
+
+                    // Target angle relative to 0
+                    // To land on segment i (index i), center of that segment is at:
+                    // (i * segAngle) + (segAngle / 2)
+                    // We need to rotate the wheel such that this angle aligns with TOP (0 deg or 360 deg).
+                    // So we want the final rotation % 360 to be:
+                    // 360 - (center of segment)
+
+                    const centerOfSegment = (segmentAngle * winIndex) + (segmentAngle / 2);
+                    const targetRotationMod = 360 - centerOfSegment; // The angle we want at the top (0)
+
+                    // We want to add at least 5 full spins
+                    const minSpins = 5;
+                    const baseRotation = 360 * minSpins;
+
+                    // Calculate where we are now
+                    const currentMod = currentRotation % 360;
+
+                    // Code to calculate delta to reach targetRotationMod
+                    // target = current + delta
+                    // delta = target - current
+                    // If delta < 0, +360
+                    // But we want to add baseRotation too.
+
+                    let delta = targetRotationMod - currentMod;
+                    if (delta < 0) {
+                        delta += 360;
+                    }
+
+                    // Add the extra spins
+                    const totalToAdd = baseRotation + delta;
+
+                    currentRotation += totalToAdd;
+
+                    console.log('Spinning to:', currentRotation);
+                    wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+                    // Blinking lights
+                    const interval = setInterval(() => {
+                        document.querySelectorAll('.light').forEach(l => {
+                            l.style.opacity = Math.random() > 0.5 ? '1' : '0.3';
+                        });
+                    }, 100);
+
+                    setTimeout(() => {
+                        clearInterval(interval);
+                        document.querySelectorAll('.light').forEach(l => l.style.opacity = '1');
+
+                        spinning = false;
+                        result.textContent = data.message;
+
+                        // Animate points
+                        const start = parseInt(pointsDisplay.innerText);
+                        const end = start + data.earned;
+                        animateValue(pointsDisplay, start, end, 1000);
+
+                        if (currentCards - 1 <= 0) {
+                            spinBtn.innerText = 'تحتاج لبطاقة حمراء';
+                            spinBtn.style.background = '#333';
+                            spinBtn.style.color = '#888';
+                        } else {
+                            spinBtn.disabled = false;
+                            spinBtn.style.opacity = '1';
+                        }
+
+                    }, 5000); // 5 sec spin matches CSS transition
+                } else {
+                    result.textContent = data.message;
+                    result.style.color = 'red';
+                    spinning = false;
+                    spinBtn.disabled = false;
+                    spinBtn.style.opacity = '1';
+                }
+            } catch (e) {
+                console.error(e);
+                result.textContent = 'خطأ في الاتصال';
+                spinning = false;
+                spinBtn.disabled = false;
+                spinBtn.style.opacity = '1';
+            }
+        });
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const currentUserId = <%= user && user.id ? user.id : 'null' %>;
+        socket.on('user_updated', (data) => {
+            if (data.userId === currentUserId) {
+                if (data.points !== undefined) {
+                    const pts = document.getElementById('user-points');
+        if (pts) pts.innerText = data.points;
+                }
+        if (data.red_cards !== undefined) {
+                    const rcd = document.getElementById('red-cards-display');
+        if (rcd) rcd.innerText = data.red_cards;
+                }
+            }
+        });
+        socket.on('prizes_updated', () => {
+            // refresh prizes wheel
+            window.location.reload();
+        });
+    </script>
+</body>
+
+</html>
