@@ -5,11 +5,13 @@ const { Pool } = require('pg');
 let db;
 let isPostgres = false;
 
-if (process.env.DATABASE_URL) {
+const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+if (dbUrl) {
     // Cloud / Production (PostgreSQL)
     isPostgres = true;
     db = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: dbUrl,
         ssl: {
             rejectUnauthorized: false
         }

@@ -61,11 +61,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 let sessionStore;
-if (process.env.DATABASE_URL) {
+const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+if (dbUrl) {
     const pgSession = require('connect-pg-simple')(session);
     sessionStore = new pgSession({
-        conString: process.env.DATABASE_URL,
-        tableName: 'session'
+        conString: dbUrl,
+        tableName: 'session',
+        createTableIfMissing: true
     });
 } else {
     const SQLiteStore = require('connect-sqlite3')(session);
