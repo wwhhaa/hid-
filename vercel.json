@@ -13,6 +13,10 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_B0qblszD5rhn@ep-misty-snow-ainqc8t3.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "EMAIL_USER": "poiuytrewqp353@gmail.com",
+    "EMAIL_PASS": "fkrh uxji kqkk fjgu",
+    "SESSION_SECRET": "super-secret-key-change-this-in-production"
   }
 }
