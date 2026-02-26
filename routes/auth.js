@@ -17,7 +17,10 @@ router.get('/register', csrfProtection, (req, res) => {
 router.post('/register', csrfProtection, async (req, res) => {
     const { username, email, password } = req.body;
     try {
-        await User.create(username, email, password);
+        const result = await User.create(username, email, password);
+        if (!result.success) {
+            return res.render('register', { csrfToken: req.csrfToken(), error: 'Registration failed. Email or Username might be taken.' });
+        }
         res.redirect('/auth/login');
     } catch (err) {
         console.error(err);
