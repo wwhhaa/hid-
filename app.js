@@ -78,8 +78,8 @@ if (dbUrl) {
     });
 }
 
-// Trust proxy is required for Render/Heroku and secure cookies
-app.set('trust proxy', 1);
+// Trust proxy is required for Render/Heroku/Vercel and secure cookies
+app.set('trust proxy', true);
 
 // Session Management
 app.use(session({
