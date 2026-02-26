@@ -1,5 +1,5 @@
 const util = require('util');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const db = require('../utils/db');
 const Transaction = require('./transaction');
 
