@@ -10,8 +10,14 @@ const transporter = nodemailer.createTransport({
 
 const sendResetEmail = async (to, token) => {
     // Determine base URL depending on env
-    const baseUrl = process.env.DATABASE_URL ? 'https://your-app-domain.com' : 'http://localhost:3000';
+    const isProd = process.env.NODE_ENV === 'production';
+    const baseUrl = isProd ? 'https://nodesecureapp.vercel.app' : 'http://localhost:3000';
     const resetLink = `${baseUrl}/auth/reset-password/${token}`;
+
+    if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'your-email@gmail.com') {
+        console.error('Email credentials not properly configured in .env!');
+        return Promise.reject(new Error("Email not configured"));
+    }
 
     const mailOptions = {
         from: process.env.EMAIL_USER || 'no-reply@rewardsapp.com',

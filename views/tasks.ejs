@@ -95,6 +95,37 @@
             <button class="btn-gold" style="padding: 10px; margin-top: 10px; font-size: 0.9rem;">تنفيذ المهمة</button>
         </div>
 
+        <!-- Tapjoy Offerwall -->
+        <div class="task-card"
+            style="border: 2px solid #FFD700; background: linear-gradient(135deg, #1f1c07, #332d00);">
+            <h4><i class="fas fa-gift" style="color: #FFD700; font-size: 1.5rem;"></i> عروض ومهمات Tapjoy</h4>
+            <p style="color: #ddd; font-size: 0.95rem;">أكمل العروض المختلفة واحصل على آلاف النقاط مجاناً!</p>
+            <button id="tapjoy-btn" class="btn-gold"
+                style="padding: 12px; margin-top: 15px; font-size: 1rem; width: 80%; border-radius: 20px; font-weight: bold; background: linear-gradient(135deg, #FFD700, #FDB931); color: #000;">
+                <i class="fas fa-tasks"></i> فتح العروض
+            </button>
+        </div>
+
+        <script>
+            document.getElementById('tapjoy-btn').addEventListener('click', () => {
+                if (window.TapjoyBridge) {
+                    window.TapjoyBridge.postMessage('showOfferwall');
+
+                    // Show a visual confirmation for the user
+                    const btn = document.getElementById('tapjoy-btn');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري فتح العروض...';
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 3000);
+                } else {
+                    alert('عذراً، هذه الميزة متاحة فقط داخل التطبيق!');
+                }
+            });
+        </script>
+
     </div>
 
     <!-- Bottom Nav -->

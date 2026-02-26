@@ -83,6 +83,7 @@ router.post('/forgot-password', csrfProtection, async (req, res) => {
 
         res.render('forgot-password', { csrfToken: req.csrfToken(), msg: 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني', error: null });
     } catch (e) {
+        console.error("Error in /forgot-password:", e);
         res.render('forgot-password', { csrfToken: req.csrfToken(), msg: null, error: 'حدث خطأ، يرجى المحاولة لاحقاً' });
     }
 });
@@ -93,7 +94,7 @@ router.get('/reset-password/:token', csrfProtection, async (req, res) => {
     try {
         const user = await User.findByResetToken(token);
         if (!user || new Date(user.reset_token_expiry) < new Date()) {
-            return res.send('رابط منتهي الصلاحية أو غير صالح');
+            return res.render('reset-password', { csrfToken: req.csrfToken(), token: null, error: 'رابط منتهي الصلاحية أو غير صالح' });
         }
         res.render('reset-password', { csrfToken: req.csrfToken(), token, error: null });
     } catch (e) {
