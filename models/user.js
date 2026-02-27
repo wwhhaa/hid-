@@ -97,7 +97,7 @@ class User {
             await db.run('UPDATE users SET last_active_date = ? WHERE id = ?', [today, id]);
         }
 
-        if (newAds % 5 === 0) {
+        if (newAds % 7 === 0) {
             await db.run('UPDATE users SET red_cards = red_cards + 1 WHERE id = ?', [id]);
             newCards++;
             earnedCard = true;
@@ -105,7 +105,14 @@ class User {
 
         await db.run('UPDATE users SET ads_watched = ?, cards_earned_today = ? WHERE id = ?', [newAds, newCards, id]);
 
-        return { success: true, earnedCard, ads: newAds };
+        const totalRedCards = earnedCard ? user.red_cards + 1 : user.red_cards;
+        return {
+            success: true,
+            earnedCard,
+            adsWatched: newAds,
+            cardsEarnedToday: newCards,
+            totalRedCards: totalRedCards
+        };
     }
 
     static async useRedCard(id) {

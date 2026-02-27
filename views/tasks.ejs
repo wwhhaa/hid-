@@ -95,36 +95,7 @@
             <button class="btn-gold" style="padding: 10px; margin-top: 10px; font-size: 0.9rem;">تنفيذ المهمة</button>
         </div>
 
-        <!-- Tapjoy Offerwall -->
-        <div class="task-card"
-            style="border: 2px solid #FFD700; background: linear-gradient(135deg, #1f1c07, #332d00);">
-            <h4><i class="fas fa-gift" style="color: #FFD700; font-size: 1.5rem;"></i> عروض ومهمات Tapjoy</h4>
-            <p style="color: #ddd; font-size: 0.95rem;">أكمل العروض المختلفة واحصل على آلاف النقاط مجاناً!</p>
-            <button id="tapjoy-btn" class="btn-gold"
-                style="padding: 12px; margin-top: 15px; font-size: 1rem; width: 80%; border-radius: 20px; font-weight: bold; background: linear-gradient(135deg, #FFD700, #FDB931); color: #000;">
-                <i class="fas fa-tasks"></i> فتح العروض
-            </button>
-        </div>
 
-        <script>
-            document.getElementById('tapjoy-btn').addEventListener('click', () => {
-                if (window.TapjoyBridge) {
-                    window.TapjoyBridge.postMessage('showOfferwall');
-
-                    // Show a visual confirmation for the user
-                    const btn = document.getElementById('tapjoy-btn');
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري فتح العروض...';
-                    btn.disabled = true;
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 3000);
-                } else {
-                    alert('عذراً، هذه الميزة متاحة فقط داخل التطبيق!');
-                }
-            });
-        </script>
 
     </div>
 
@@ -155,51 +126,77 @@
         const adsCount = document.getElementById('ads-count');
         const cardsCount = document.getElementById('cards-count');
         const progressBar = document.getElementById('progress-bar');
-        const dailyLimit = document.getElementById('daily-limit');
+        // الرابط الخاص بالإعلانات
+        const AD_LINK = '#وضــع_رابـط_الإعـلان_هنـا'; // Server or Frontend replaces this, or you can paste it directly when provided
+
+        // دالة يتم استدعاؤها من التطبيق (Flutter) عند انتهاء مشاهدة الفيديو بنجاح
+        window.onVideoRewarded = async function () {
+            try {
+                const response = await fetch('/features/watch-ad', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    adsCount.textContent = data.adsWatched;
+                    cardsCount.textContent = data.totalRedCards;
+                    dailyLimit.textContent = data.cardsEarnedToday;
+                    progressBar.style.width = (data.adsWatched / 7 * 100) + '%';
+
+                    if (data.earnedCard) {
+                        adMsg.textContent = '🎉 مبروك! حصلت على بطاقة حمراء!';
+                        adMsg.style.color = '#00ff00';
+                        watchBtn.style.background = '#00cc00';
+                        setTimeout(() => {
+                            watchBtn.style.background = ''; // reset
+                        }, 1000);
+                    } else {
+                        adMsg.textContent = 'تم احتساب الإعلان ✅';
+                    }
+                } else {
+                    adMsg.textContent = data.message;
+                    adMsg.style.color = '#ff4d4d';
+                }
+            } catch (e) {
+                console.error("Video Reward Error:", e);
+                // We'll silently fail in UI or just show generic error if needed
+                // adMsg.textContent = 'حدث خطأ في الاتصال'; 
+            } finally {
+                watchBtn.disabled = false;
+                watchBtn.innerHTML = '<i class="fas fa-play-circle"></i> مشاهدة إعلان';
+            }
+        };
 
         watchBtn.addEventListener('click', async () => {
             watchBtn.disabled = true;
-            watchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المشاهدة...';
+            watchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري فتح الإعلان...';
             adMsg.textContent = '';
             adMsg.style.color = '#fff';
 
-            // Simulate 3 seconds ad
-            setTimeout(async () => {
-                try {
-                    const response = await fetch('/features/watch-ad', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    const data = await response.json();
+            if (window.AdsBridge) {
+                // نحن داخل التطبيق (Flutter) - نعرض فيديو Tapjoy
+                window.AdsBridge.postMessage('showRewardedVideo');
+                // لا نعيد تفعيل الزر هنا، دالة onVideoRewarded ستقوم بذلك
+                return;
+            }
 
-                    if (data.success) {
-                        adsCount.textContent = data.adsWatched;
-                        cardsCount.textContent = data.totalRedCards;
-                        dailyLimit.textContent = data.cardsEarnedToday;
-                        progressBar.style.width = (data.adsWatched / 7 * 100) + '%';
+            // فتح رابط الإعلان كبديل إذا كنا في المتصفح فقط
+            if (AD_LINK !== '#وضــع_رابـط_الإعـلان_هنـا' && AD_LINK !== '') {
+                window.open(AD_LINK, '_blank');
+            } else {
+                console.log('ملاحظة: يجري اختبار مشاهدة الإعلان محلياً بدون رابط حقيقي.');
+            }
 
-                        if (data.earnedCard) {
-                            adMsg.textContent = '🎉 مبروك! حصلت على بطاقة حمراء!';
-                            adMsg.style.color = '#00ff00';
-                            // Quick visual celebration
-                            watchBtn.style.background = '#00cc00';
-                            setTimeout(() => {
-                                watchBtn.style.background = ''; // reset
-                            }, 1000);
-                        } else {
-                            adMsg.textContent = 'تم احتساب الإعلان ✅';
-                        }
-                    } else {
-                        adMsg.textContent = data.message;
-                        adMsg.style.color = '#ff4d4d';
-                    }
-                } catch (e) {
-                    adMsg.textContent = 'حدث خطأ في الاتصال';
-                } finally {
-                    watchBtn.disabled = false;
-                    watchBtn.innerHTML = '<i class="fas fa-play-circle"></i> مشاهدة إعلان';
-                }
-            }, 3000);
+            // انتظار مدة الإعلان لاحتسابه (يستخدم المتصفح هذا كبديل فقط)
+            setTimeout(() => {
+                window.onVideoRewarded();
+            }, 5000); // 5 ثواني لضمان مشاهدة الإعلان في حال التصفح العادي
         });
     </script>
 </body>
